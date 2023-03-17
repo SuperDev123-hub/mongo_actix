@@ -4,10 +4,11 @@ use actix_web::{
     web::{Data, Json, Path},
     HttpResponse,
 };
+use mongo_api::MongoDbClient;
 use mongodb::bson::oid::ObjectId;
 
 #[post("/user")]
-pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpResponse {
+pub async fn create_user(db: Data<MongoDbClient>, new_user: Json<User>) -> HttpResponse {
     let data = User {
         id: None,
         name: new_user.name.to_owned(),
@@ -15,7 +16,7 @@ pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpRespo
         title: new_user.title.to_owned(),
     };
 
-    let user_detail = db.create_user(data).await;
+    let user_detail = db.insert_one(data).await;
 
     match user_detail {
         Ok(user) => HttpResponse::Ok().json(user),

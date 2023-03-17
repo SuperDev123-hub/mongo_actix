@@ -4,11 +4,18 @@ mod repository;
 
 use actix_web::{web::Data, App, HttpServer};
 use api::user_api::{create_user, delete_user, get_all_users, get_user, update_user};
-use repository::mongodb_repo::MongoRepo;
+use dotenv::dotenv;
+use mongo_api::MongoDbClient;
+use std::env;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let db = MongoRepo::init().await;
+    dotenv().ok();
+    let uri = match env::var("MONGOURI") {
+        Ok(v) => v.to_string(),
+        Err(_) => format!("Error loading env variable"),
+    };
+    let db = MongoDbClient::init(&uri, "rustDB").await;
     let db_data = Data::new(db);
     HttpServer::new(move || {
         App::new()

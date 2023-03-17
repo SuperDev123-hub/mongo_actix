@@ -75,6 +75,7 @@ dependencies = [
  "actix-web",
  "dotenv",
  "futures",
+ "mongo_api",
  "mongodb",
  "serde",
 ]
